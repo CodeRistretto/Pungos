@@ -6,6 +6,9 @@ import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import { connectDB } from './src/config/db.js';
 import authRouter from './src/routes/auth.routes.js';
+import mongoose from 'mongoose';
+import ugcRoutes from './src/routes/ugc.routes.js';
+
 
 const app = express();
 
@@ -17,6 +20,9 @@ app.use(cookieParser());
 
 app.get('/api/health', (req, res) => res.json({ ok: true }));
 app.use('/api/auth', authRouter);
+
+// Rutas
+app.use('/api/ugc', ugcRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err);

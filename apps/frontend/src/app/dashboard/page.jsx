@@ -69,9 +69,9 @@ function QuickActions() {
   const btn = 'px-3 py-2 rounded-lg border hover:bg-white transition text-sm';
   return (
     <div className="flex flex-wrap gap-2">
-      <Link href="#" className={btn}>➕ Crear campaña</Link>
-      <Link href="#" className={btn}>🧾 Reglas</Link>
-      <Link href="#" className={btn}>🗂️ Revisar UGC</Link>
+      <Link href="/campaigns" className={btn}>➕ Crear campaña</Link>
+      <Link href="/rules" className={btn}>🧾 Reglas</Link>
+      <Link href="/moderation" className={btn}>🗂️ Revisar UGC</Link>
       <Link href="/redeem" className="px-3 py-2 rounded-lg bg-pungos-primary text-white hover:bg-pungos-primary-700 transition text-sm">📷 Escanear QR</Link>
     </div>
   );
