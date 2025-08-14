@@ -1,4 +1,4 @@
-// File: C:\Users\Ristretto\Documents\Pungos\apps\frontend\src\app\(auth)\forgot\page.jsx
+// File: /Users/andres/Documents/Pungos/pungos/apps/frontend/src/app/(auth)/forgot/page.jsx
 import * as entry from '../../../../../src/app/(auth)/forgot/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

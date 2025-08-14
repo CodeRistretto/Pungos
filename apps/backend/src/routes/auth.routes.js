@@ -92,10 +92,134 @@ router.post('/forgot', async (req, res) => {
       from: '"Pungos" <no-reply@pungos.app>',
       to: user.email,
       subject: 'Restablecer contraseña',
-      html: `<p>Hola ${user.name},</p>
-             <p>Haz click para restablecer tu contraseña:</p>
-             <p><a href="${resetUrl}">${resetUrl}</a></p>
-             <p>Caduca en 30 minutos.</p>`
+      html: `<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="x-apple-disable-message-reformatting">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Restablecer contraseña</title>
+  <style>
+    /* Resets básicos */
+    body, table, td, a { font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; }
+    img { border: 0; line-height: 100%; outline: none; text-decoration: none; }
+    table { border-collapse: collapse !important; }
+    /* Dark mode (algunos clientes) */
+    @media (prefers-color-scheme: dark) {
+      .bg { background: #0b0b0d !important; }
+      .card { background: #121218 !important; border-color: #232334 !important; }
+      .muted, .footer { color: #a3a3b2 !important; }
+      .text { color: #ffffff !important; }
+      .btn { background: #6366f1 !important; color:#fff !important; }
+      .brand { color: #fff !important; }
+    }
+    /* Mobile */
+    @media screen and (max-width: 600px){
+      .container { width: 100% !important; }
+      .px { padding-left: 20px !important; padding-right: 20px !important; }
+    }
+  </style>
+</head>
+<body style="margin:0; padding:0; background:#f6f7fb;" class="bg">
+  <!-- Preheader (preview en inbox) -->
+  <div style="display:none; visibility:hidden; opacity:0; color:transparent; height:0; width:0; overflow:hidden; mso-hide:all;">
+    Enlace para restablecer tu contraseña. Expira en 30 minutos.
+  </div>
+
+  <table role="presentation" width="100%" bgcolor="#f6f7fb" class="bg">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
+        <table role="presentation" width="600" class="container" style="max-width:600px; width:600px;">
+          <!-- Header / Brand -->
+          <tr>
+            <td align="left" style="padding: 10px 24px;">
+              <a href="https://pungos.app" style="text-decoration:none;">
+                <span class="brand" style="font-size:20px; font-weight:800; color:#0f172a;">Pungos</span>
+              </a>
+            </td>
+          </tr>
+
+          <!-- Card -->
+          <tr>
+            <td class="px" style="padding: 6px 24px;">
+              <table role="presentation" width="100%" class="card" style="background:#ffffff; border:1px solid #e5e7eb; border-radius:14px;">
+                <tr>
+                  <td style="padding: 28px;">
+                    <!-- Título -->
+                    <h1 class="text" style="margin:0 0 8px 0; font-size:22px; line-height:1.3; color:#0f172a; font-weight:800;">
+                      Restablecer tu contraseña
+                    </h1>
+                    <p class="muted" style="margin:0; color:#475569; font-size:14px; line-height:1.7;">
+                      Hola <strong style="color:#0f172a;">{{name}}</strong>, recibimos una solicitud para cambiar tu contraseña.
+                      Si fuiste tú, usa el botón de abajo. Este enlace
+                      <strong>caduca en 30 minutos</strong>.
+                    </p>
+
+                    <!-- Botón -->
+                    <table role="presentation" align="center" style="margin:24px auto 12px auto;">
+                      <tr>
+                        <td align="center" bgcolor="#111827" class="btn"
+                            style="border-radius:10px; background:#111827;">
+                          <a href="{{resetUrl}}"
+                             style="display:inline-block; padding:12px 22px; color:#ffffff; font-weight:700; font-size:14px; text-decoration:none;">
+                            Crear nueva contraseña
+                          </a>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- Enlace alternativo -->
+                    <p class="muted" style="margin:12px 0 0 0; color:#64748b; font-size:12px; line-height:1.7;">
+                      Si el botón no funciona, copia y pega este enlace en tu navegador:
+                      <br>
+                      <a href="${resetUrl}" style="color:#4f46e5; word-break:break-all;">${resetUrl}</a>
+                    </p>
+
+                    <!-- Seguridad -->
+                    <table role="presentation" width="100%" style="margin-top:24px;">
+                      <tr>
+                        <td style="background:#f1f5f9; border-radius:10px; padding:12px 14px;">
+                          <p class="muted" style="margin:0; color:#475569; font-size:12px; line-height:1.6;">
+                            ¿No solicitaste este cambio? Puedes ignorar este correo.
+                            Tu contraseña seguirá siendo la misma.
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- Firma -->
+                    <p class="muted" style="margin:20px 0 0 0; color:#475569; font-size:13px;">
+                      — El equipo de <strong style="color:#0f172a;">Pungos</strong>
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td class="px" align="center" style="padding: 18px 24px;">
+              <p class="footer" style="margin:0; color:#94a3b8; font-size:12px;">
+                Este correo fue enviado a <span style="color:#64748b;">{{email}}</span>.
+                Si necesitas ayuda, responde a este mensaje o contáctanos en soporte@pungos.app
+              </p>
+              <p class="footer" style="margin:6px 0 0 0; color:#94a3b8; font-size:12px;">
+                © {{year}} Pungos, Todos los derechos reservados.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`
+    .replace('{{name}}', user.name)
+    .replace('{{resetUrl}}', resetUrl)
+    .replace('{{email}}', user.email)
+    .replace('{{year}}', new Date().getFullYear()) 
+    
     });
     logPreview(info); // si es Ethereal, imprime preview URL
   } catch (err) {
