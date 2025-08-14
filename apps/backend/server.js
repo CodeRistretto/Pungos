@@ -20,6 +20,14 @@ app.use(cookieParser());
 
 app.get('/api/health', (req, res) => res.json({ ok: true }));
 app.use('/api/auth', authRouter);
+app.get("/", (req, res) => {
+  res.send("Pungos API is running");
+});
+
+app.get("/healthz", (req, res) => {
+  res.status(200).json({ status: "ok", uptime: process.uptime() });
+});
+
 
 // Rutas
 app.use('/api/ugc', ugcRoutes);
