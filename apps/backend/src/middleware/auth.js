@@ -1,21 +1,16 @@
-import jwt from 'jsonwebtoken';
+import { verifyJwt } from '../utils/jwt.js';
+import User from '../models/User.js';
 
-function getToken(req) {
-  const header = req.headers.authorization || '';
-  if (header.startsWith('Bearer ')) return header.slice(7);
-  // También desde cookie httpOnly:
-  if (req.cookies?.token) return req.cookies.token;
-  return null;
-}
-
-export function requireAuth(req, res, next) {
-  const token = getToken(req);
-  if (!token) return res.status(401).json({ error: 'No autenticado' });
+export async function requireAuth(req, res, next) {
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = payload;
+    const token = req.cookies?.token;
+    if (!token) return res.status(401).json({ ok:false, error:'No token' });
+    const payload = verifyJwt(token);
+    const user = await User.findById(payload.uid).lean();
+    if (!user) return res.status(401).json({ ok:false, error:'Invalid token' });
+    req.user = { _id: user._id, email: user.email, roles: user.roles, name: user.name };
     next();
-  } catch {
-    return res.status(401).json({ error: 'Token inválido' });
+  } catch (e) {
+    return res.status(401).json({ ok:false, error:'Unauthorized' });
   }
 }

@@ -1,5 +1,9 @@
 {
   "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/moderation/page": "app/moderation/page.js",
-  "/dashboard/page": "app/dashboard/page.js"
+  "/_not-found/page": "app/_not-found/page.js",
+  "/profile/page": "app/profile/page.js",
+  "/(auth)/reset/[token]/page": "app/(auth)/reset/[token]/page.js",
+  "/campaigns/page": "app/campaigns/page.js",
+  "/rules/page": "app/rules/page.js",
+  "/redeem/page": "app/redeem/page.js"
 }

@@ -23,6 +23,10 @@ app.use('/api/auth', authRouter);
 
 // Rutas
 app.use('/api/ugc', ugcRoutes);
+import campaignsRoutes from './src/routes/campaigns.routes.js';
+// ...
+app.use('/api/campaigns', campaignsRoutes);
+
 
 app.use((err, req, res, next) => {
   console.error(err);
