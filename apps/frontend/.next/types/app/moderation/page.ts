@@ -1,4 +1,4 @@
-// File: C:\Users\Ristretto\Documents\Pungos\apps\frontend\src\app\moderation\page.jsx
+// File: /Users/andres/Documents/Pungos/pungos/apps/frontend/src/app/moderation/page.jsx
 import * as entry from '../../../../src/app/moderation/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
