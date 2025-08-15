@@ -39,11 +39,13 @@ export default function UGCQueue() {
     load();
   }
 
+  const box = "border rounded-lg p-4 bg-white";
+
   return (
     <main className="max-w-5xl mx-auto p-6">
       <h1 className="text-2xl font-bold mb-6">Revisar UGC</h1>
 
-      <form onSubmit={submit} className="border rounded-lg p-4 bg-white mb-8 grid md:grid-cols-2 gap-3">
+      <form onSubmit={submit} className={`${box} mb-8 grid md:grid-cols-2 gap-3`}>
         <input placeholder="Business ID" className="border p-2 rounded" value={form.businessId} onChange={e=>setForm(s=>({...s,businessId:e.target.value}))} />
         <input placeholder="Campaign ID" className="border p-2 rounded" value={form.campaignId} onChange={e=>setForm(s=>({...s,campaignId:e.target.value}))} />
         <input placeholder="Post URL" className="border p-2 rounded md:col-span-2" value={form.postUrl} onChange={e=>setForm(s=>({...s,postUrl:e.target.value}))} />
@@ -55,7 +57,7 @@ export default function UGCQueue() {
 
       <div className="grid gap-3">
         {list.map(x=>(
-          <div key={x._id} className="border rounded-lg p-4 bg-white">
+          <div key={x._id} className={box}>
             <p className="font-semibold">{x.network?.toUpperCase()} — {x.postUrl}</p>
             <p className="text-sm text-gray-500">Detectado: {new Date(x.detectedAt).toLocaleString()}</p>
             <div className="mt-3 flex gap-2">

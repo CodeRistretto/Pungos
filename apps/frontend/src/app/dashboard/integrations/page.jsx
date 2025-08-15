@@ -1,20 +1,39 @@
-export const dynamic = 'force-dynamic';
+import Link from 'next/link';
 
-export default function Integrations() {
-  const api = process.env.NEXT_PUBLIC_API_BASE || 'https://api.pungos.com';
-  const url = `${api}/api/meta/oauth/start`;
+export default function IntegrationsIndex() {
   return (
-    <main className="max-w-3xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">Integraciones</h1>
-      <p className="text-gray-600 mb-4">
-        Conecta tu página de Facebook/Instagram para automatizar menciones y recompensas.
-      </p>
-      <a href={url} className="inline-block px-4 py-2 rounded bg-indigo-600 text-white">
-        Conectar Instagram/Facebook
-      </a>
-      <div className="mt-6 text-sm text-gray-500">
-        <p>Callback OK: /dashboard/integrations/meta/callback</p>
-        <p>Éxito: /dashboard/integrations/meta/success</p>
+    <main className="section section-py">
+      <h1 className="text-2xl font-bold mb-6">Integraciones</h1>
+
+      <div className="grid md:grid-cols-2 gap-4">
+        <div className="card">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="font-semibold">Instagram (Meta)</p>
+              <p className="text-sm text-slate-500">
+                Conecta tu cuenta para detectar historias y menciones.
+              </p>
+            </div>
+          </div>
+          <div className="mt-4 flex gap-2">
+            <Link href="/dashboard/integrations/meta" className="btn btn-primary">
+              Conectar
+            </Link>
+            <a
+              href="https://developers.facebook.com/docs/instagram-api"
+              target="_blank" rel="noreferrer"
+              className="btn btn-ghost"
+            >
+              Documentación
+            </a>
+          </div>
+        </div>
+
+        {/* espacio para futuras integraciones */}
+        <div className="card">
+          <p className="font-semibold">Próximamente</p>
+          <p className="text-sm text-slate-500">TikTok, X (Twitter), YouTube…</p>
+        </div>
       </div>
     </main>
   );
