@@ -22,7 +22,7 @@ router.get('/', async (req, res) => {
   try {
     // Ejemplo: redirigir al frontend con el código recibido
     // En producción, deberías intercambiarlo por un access_token
-    res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/meta-success?code=${code}`);
+    res.redirect(`${process.env.FRONTEND_URL || 'https://pungos.com'}/meta-success?code=${code}`);
   } catch (err) {
     console.error('❌ Error en callback de Meta:', err);
     res.status(500).send('Error interno al procesar el callback');
