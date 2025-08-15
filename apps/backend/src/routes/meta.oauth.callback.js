@@ -2,31 +2,35 @@ import { Router } from 'express';
 
 const router = Router();
 
-/**
- * Callback de OAuth de Meta
- * - Meta redirige aquí después de que el usuario da permisos.
- * - Intercambiamos el "code" por un access_token usando la API de Meta.
- */
-router.get('/', async (req, res) => {
-  const { code, error, error_description } = req.query;
+router.get('/callback', async (req, res) => {
+  const { code, error } = req.query;
+  const rawFront = process.env.FRONTEND_URL || 'https://pungos.com';
 
-  if (error) {
-    console.error('❌ Error de OAuth Meta:', error, error_description);
-    return res.status(400).send('Error en autenticación con Meta');
-  }
-
-  if (!code) {
-    return res.status(400).send('Falta el parámetro code');
-  }
-
+  // Normaliza FRONTEND_URL y construye una URL absoluta segura
+  let front;
   try {
-    // Ejemplo: redirigir al frontend con el código recibido
-    // En producción, deberías intercambiarlo por un access_token
-    res.redirect(`${process.env.FRONTEND_URL || 'https://pungos.com'}/meta-success?code=${code}`);
-  } catch (err) {
-    console.error('❌ Error en callback de Meta:', err);
-    res.status(500).send('Error interno al procesar el callback');
+    // si el env viene sin esquema, añade https://
+    const base = rawFront.startsWith('http') ? rawFront : `https://${rawFront}`;
+    front = new URL('/auth/meta', base);  // /auth/meta es tu página que mostrará el resultado
+    if (error) {
+      front.searchParams.set('status', 'error');
+      front.searchParams.set('error', String(error));
+    } else {
+      front.searchParams.set('status', 'connected');
+      if (code) front.searchParams.set('code', String(code));
+    }
+  } catch (e) {
+    // Si incluso así falla, devolvemos una página segura con enlace
+    return res
+      .status(200)
+      .send(`<html><body>
+        <p>Callback recibido. Abre este enlace:</p>
+        <a href="https://pungos.com/auth/meta">https://pungos.com/auth/meta</a>
+      </body></html>`);
   }
+
+  // Redirección garantizada con URL absoluta válida
+  res.redirect(302, front.toString());
 });
 
 export default router;
