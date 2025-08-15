@@ -966,6 +966,10 @@ video {
   --tw-bg-opacity: 1;
   background-color: rgb(254 252 232 / var(--tw-bg-opacity, 1));
 }
+.bg-indigo-600 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(79 70 229 / var(--tw-bg-opacity, 1));
+}
 .bg-\[radial-gradient\(70\%_55\%_at_50\%_-10\%\2c \#E8F0FF_0\%\2c transparent_60\%\)\2c linear-gradient\(to_bottom\2c \#ffffff\2c \#f8fafc\)\] {
   background-image: radial-gradient(70% 55% at 50% -10%,#E8F0FF 0%,transparent 60%),linear-gradient(to bottom,#ffffff,#f8fafc);
 }

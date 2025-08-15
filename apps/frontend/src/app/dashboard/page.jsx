@@ -77,6 +77,10 @@ function QuickActions() {
   );
 }
 
+
+
+
+
 function Table({ headers=[], children }) {
   return (
     <div className="overflow-auto border rounded-xl bg-white">

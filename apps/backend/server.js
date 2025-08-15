@@ -37,6 +37,21 @@ function rawBodySaver(req, res, buf) {
 }
 app.use(express.json({ verify: rawBodySaver }));
 
+app.use((req, res, next) => {
+  if (req.originalUrl.startsWith('/api/webhooks/meta') && req.method === 'POST') {
+    let data = '';
+    req.setEncoding('utf8');
+    req.on('data', chunk => data += chunk);
+    req.on('end', () => {
+      req.rawBody = data;
+      try { req.body = JSON.parse(data || '{}'); } catch { req.body = {}; }
+      next();
+    });
+  } else {
+    express.json({ limit: '1mb' })(req, res, next);
+  }
+});
+
 // meta
 app.use('/api/meta/oauth', metaOAuth);
 app.use('/api/meta/oauth', metaOAuthCallback);
