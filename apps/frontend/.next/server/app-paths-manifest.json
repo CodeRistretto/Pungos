@@ -1,5 +1,4 @@
 {
-  "/profile/page": "app/profile/page.js",
   "/dashboard/page": "app/dashboard/page.js",
   "/privacidad/page": "app/privacidad/page.js",
   "/dashboard/integrations/page": "app/dashboard/integrations/page.js",
