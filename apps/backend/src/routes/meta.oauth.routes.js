@@ -1,81 +1,63 @@
 import { Router } from 'express';
 import jwt from 'jsonwebtoken';
 import MetaAccount from '../models/MetaAccount.js';
-import {
-  buildAuthUrl, exchangeCodeForToken, getUserPages,
-  getPageInstagramBusinessId, subscribePage
-} from '../utils/meta.js';
+import { buildAuthUrl, exchangeCodeForToken, getUserPages, getPageInstagramBusinessId, subscribePage } from '../utils/meta.js';
 
 const router = Router();
 
-/**
- * GET /api/meta/oauth/login?businessId=... (opcional)
- * Redirige al diálogo OAuth de Meta.
- */
-router.get('/login', (req, res) => {
-  const stateObj = {
-    businessId: req.query.businessId || null,
-    ts: Date.now()
-  };
-  const state = jwt.sign(stateObj, process.env.JWT_SECRET || 'dev');
-  const url = buildAuthUrl({ state });
-  return res.redirect(url);
+// GET /api/meta/oauth/start?businessId=...
+router.get('/oauth/start', (req, res) => {
+  const state = jwt.sign({ businessId: req.query.businessId || null, ts: Date.now() }, process.env.JWT_SECRET || 'dev');
+  return res.redirect(buildAuthUrl({ state }));
 });
 
-/**
- * GET /api/meta/oauth/callback?code=...
- * Canjea code → access_token, lista páginas,
- * toma la primera página, guarda tokens y (si hay IG) su id.
- */
-router.get('/callback', async (req, res) => {
+// ALL /api/meta/oauth/callback
+router.all('/oauth/callback', async (req, res) => {
   try {
-    const { code, state } = req.query;
-    if (!code) return res.status(400).send('Falta code');
-
-    let stateData = null;
-    try {
-      stateData = jwt.verify(state, process.env.JWT_SECRET || 'dev');
-    } catch {}
-    const businessId = stateData?.businessId || null;
-
-    const tokenResp = await exchangeCodeForToken(code);
-    const userToken = tokenResp.access_token;
-
-    const pages = await getUserPages(userToken);
-    if (!pages.length) {
-      return res.status(200).send('Conexión OK, pero no se encontraron páginas.');
+    if (req.query?.error) {
+      const redirect = `${process.env.FRONTEND_URL || 'https://pungos.com'}/integrations/meta/callback` +
+        `?error=${encodeURIComponent(req.query.error)}` +
+        `&reason=${encodeURIComponent(req.query.error_reason || '')}` +
+        `&desc=${encodeURIComponent(req.query.error_description || '')}`;
+      return res.redirect(302, redirect);
     }
 
-    // para MVP tomamos la primera página
+    const { code, state } = req.query;
+    if (!code) return res.redirect(`${process.env.FRONTEND_URL || 'https://pungos.com'}/integrations/meta/callback?error=missing_code`);
+
+    let st = null; try { st = jwt.verify(state, process.env.JWT_SECRET || 'dev'); } catch {}
+    const businessId = st?.businessId || null;
+
+    const tokenData = await exchangeCodeForToken(code);            // user token corto
+    const pages = await getUserPages(tokenData.access_token);      // páginas del usuario
+    if (!pages.length) {
+      return res.redirect(`${process.env.FRONTEND_URL || ''}/integrations/meta/callback?error=no_pages`);
+    }
+
+    // Tomamos la primera página (MVP)
     const page = pages[0]; // { id, name, access_token, ... }
     const ig = await getPageInstagramBusinessId(page.id, page.access_token);
+    try { await subscribePage(page.id, page.access_token); } catch {}
 
-    // Opcional: suscribir app a la página
-    try { await subscribePage(page.id, page.access_token); } catch { /* ignore MVP */ }
-
-    // Guardar cuenta Meta
-    const doc = await MetaAccount.findOneAndUpdate(
+    await MetaAccount.findOneAndUpdate(
       { pageId: page.id },
       {
-        userId: null,            // si tienes user en req, colócalo
+        userId: null, // si tienes req.user, úsalo
         businessId,
         platform: ig ? 'instagram' : 'facebook',
         pageId: page.id,
         pageName: page.name,
         igBusinessId: ig?.id || null,
+        igUsername: ig?.username || null,
         accessToken: page.access_token,
-        subscribed: true,
-        scopes: [],              // opcional
+        subscribed: true
       },
       { upsert: true, new: true }
     );
 
-    // Redirige a tu panel con un mensaje simple
-    const back = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard/integrations?meta=ok`;
-    return res.redirect(back);
+    return res.redirect(`${process.env.FRONTEND_URL || ''}/integrations/meta/success`);
   } catch (e) {
-    console.error('OAuth callback error:', e);
-    return res.status(500).send('Error en callback: ' + e.message);
+    return res.redirect(`${process.env.FRONTEND_URL || ''}/integrations/meta/callback?error=exchange_failed&msg=${encodeURIComponent(e.message)}`);
   }
 });
 

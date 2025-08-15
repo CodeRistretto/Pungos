@@ -2,8 +2,8 @@ import mongoose from 'mongoose';
 
 const MetaWebhookEventSchema = new mongoose.Schema({
   object: String,
-  raw: Object,
   type: String,
+  raw: Object,
   receivedAt: { type: Date, default: Date.now }
 }, { timestamps: true });
 

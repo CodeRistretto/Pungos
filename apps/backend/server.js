@@ -11,7 +11,7 @@ import ugcRoutes from './src/routes/ugc.routes.js';
 import metaOAuth from './src/routes/meta.oauth.routes.js';
 import metaOAuthCallback from './src/routes/meta.oauth.callback.js';
 import webhooksMeta from './src/routes/webhooks.meta.routes.js';
-
+import eventsRoutes from './src/routes/events.routes.js';
 
 const app = express();
 
@@ -41,12 +41,8 @@ app.use((req, res, next) => {
   if (req.originalUrl.startsWith('/api/webhooks/meta') && req.method === 'POST') {
     let data = '';
     req.setEncoding('utf8');
-    req.on('data', chunk => data += chunk);
-    req.on('end', () => {
-      req.rawBody = data;
-      try { req.body = JSON.parse(data || '{}'); } catch { req.body = {}; }
-      next();
-    });
+    req.on('data', (c) => (data += c));
+    req.on('end', () => { req.rawBody = data; try { req.body = JSON.parse(data||'{}'); } catch { req.body = {}; } next(); });
   } else {
     express.json({ limit: '1mb' })(req, res, next);
   }
@@ -57,6 +53,7 @@ app.use('/api/meta/oauth', metaOAuth);
 app.use('/api/meta/oauth', metaOAuthCallback);
 app.use('/api/webhooks/meta', webhooksMeta);
 app.use('/api/meta/oauth/callback', metaOAuthCallback);
+app.use('/api/events', eventsRoutes);
 
 app.get('/api/meta/oauth/callback', (req, res) => {
   const { code, state, error, error_description } = req.query;
