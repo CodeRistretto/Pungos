@@ -8,6 +8,9 @@ import { connectDB } from './src/config/db.js';
 import authRouter from './src/routes/auth.routes.js';
 import mongoose from 'mongoose';
 import ugcRoutes from './src/routes/ugc.routes.js';
+import metaOAuth from './src/routes/meta.oauth.routes.js';
+import metaOAuthCallback from './src/routes/meta.oauth.callback.js';
+import webhooksMeta from './src/routes/webhooks.meta.routes.js';
 
 
 const app = express();
@@ -28,6 +31,17 @@ app.get("/healthz", (req, res) => {
   res.status(200).json({ status: "ok", uptime: process.uptime() });
 });
 
+// server.js
+function rawBodySaver(req, res, buf) {
+  if (buf && buf.length) req.rawBody = buf;
+}
+app.use(express.json({ verify: rawBodySaver }));
+
+// meta
+app.use('/api/meta/oauth', metaOAuth);
+app.use('/api/meta/oauth', metaOAuthCallback);
+app.use('/api/webhooks/meta', webhooksMeta);
+app.use('/api/meta/oauth/callback', metaOAuthCallback);
 
 // Rutas
 app.use('/api/ugc', ugcRoutes);
