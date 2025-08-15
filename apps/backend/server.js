@@ -9,9 +9,9 @@ import authRouter from './src/routes/auth.routes.js';
 import mongoose from 'mongoose';
 import ugcRoutes from './src/routes/ugc.routes.js';
 import metaOAuth from './src/routes/meta.oauth.routes.js';
-import metaOAuthCallback from './src/routes/meta.oauth.callback.js';
 import webhooksMeta from './src/routes/webhooks.meta.routes.js';
 import eventsRoutes from './src/routes/events.routes.js';
+import metaOauthRouter from './src/routes/meta.oauth.routes.js';
 
 const app = express();
 
@@ -50,10 +50,9 @@ app.use((req, res, next) => {
 
 // meta
 app.use('/api/meta/oauth', metaOAuth);
-app.use('/api/meta/oauth', metaOAuthCallback);
 app.use('/api/webhooks/meta', webhooksMeta);
-app.use('/api/meta/oauth/callback', metaOAuthCallback);
 app.use('/api/events', eventsRoutes);
+app.use('/api/meta', metaOauthRouter);
 
 app.get('/api/meta/oauth/callback', (req, res) => {
   const { code, state, error, error_description } = req.query;
