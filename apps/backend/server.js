@@ -43,6 +43,14 @@ app.use('/api/meta/oauth', metaOAuthCallback);
 app.use('/api/webhooks/meta', webhooksMeta);
 app.use('/api/meta/oauth/callback', metaOAuthCallback);
 
+app.get('/api/meta/oauth/callback', (req, res) => {
+  const { code, state, error, error_description } = req.query;
+  if (error) {
+    return res.status(400).send(`OAuth error: ${error} - ${error_description || ''}`);
+  }
+  return res.status(200).send(`Código recibido: ${code || '(sin code)'}`);
+});
+
 // Rutas
 app.use('/api/ugc', ugcRoutes);
 import campaignsRoutes from './src/routes/campaigns.routes.js';
